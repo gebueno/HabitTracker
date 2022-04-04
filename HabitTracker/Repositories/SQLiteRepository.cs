@@ -1,15 +1,7 @@
 ﻿using Microsoft.Data.Sqlite;
-using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace HabitTracker.Repositories
 {
-
-
     public class SQLiteRepository
     {
         private readonly string connectionString = @"Data Source=habits.db";
@@ -48,6 +40,79 @@ namespace HabitTracker.Repositories
                     tableCmd.Parameters.AddWithValue("@date", date);
                     tableCmd.Parameters.AddWithValue("@quantity", quantity);
                     tableCmd.Parameters.AddWithValue("@description", description);
+
+                    tableCmd.ExecuteNonQuery();
+                };
+            }
+        }
+
+        public void UpdateQuantity(int habitId, int quantity)
+        {
+            using (var connection = new SqliteConnection(connectionString))
+            {
+                using (var tableCmd = connection.CreateCommand())
+                {
+                    tableCmd.CommandText =
+                        @"UPDATE yourHabit 
+                            SET Quantity = @quantity
+                            WHERE Id = @id";
+
+                    tableCmd.Parameters.AddWithValue("@id", habitId);
+                    tableCmd.Parameters.AddWithValue("@quantity", quantity);
+
+                    tableCmd.ExecuteNonQuery();
+                };
+            }
+        }
+
+        public void UpdateDescription(int habitId, string description)
+        {
+            using (var connection = new SqliteConnection(connectionString))
+            {
+                using (var tableCmd = connection.CreateCommand())
+                {
+                    tableCmd.CommandText =
+                        @"UPDATE yourHabit 
+                            SET Description = @description
+                            WHERE Id = @id";
+
+                    tableCmd.Parameters.AddWithValue("@id", habitId);
+                    tableCmd.Parameters.AddWithValue("@description", description);
+
+                    tableCmd.ExecuteNonQuery();
+                };
+            }
+        }
+
+        public void Delete(int habitId)
+        {
+            using (var connection = new SqliteConnection(connectionString))
+            {
+                using (var tableCmd = connection.CreateCommand())
+                {
+                    tableCmd.CommandText =
+                        @"DELETE FROM yourHabit                            
+                            WHERE Id = @id";
+
+                    tableCmd.Parameters.AddWithValue("@id", habitId);
+
+                    tableCmd.ExecuteNonQuery();
+                };
+            }
+        }
+
+        public void Select(int habitId)
+        {
+            using (var connection = new SqliteConnection(connectionString))
+            {
+                using (var tableCmd = connection.CreateCommand())
+                {
+                    tableCmd.CommandText =
+                        @"SELECT Date, Quantity, Description
+                            FROM yourHabit
+                            WHERE Id = @id";
+
+                    tableCmd.Parameters.AddWithValue("@id", habitId);
 
                     tableCmd.ExecuteNonQuery();
                 };

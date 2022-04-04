@@ -1,4 +1,5 @@
 ﻿using System;
+using HabitTracker.Business;
 
 namespace HabitTracker
 {
@@ -6,7 +7,8 @@ namespace HabitTracker
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Hello World!");
+            HabitBusiness habit = new HabitBusiness();
+            habit.MainMenu();
         }
     }
 }
