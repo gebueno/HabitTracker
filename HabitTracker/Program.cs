@@ -1,5 +1,6 @@
 ﻿using System;
 using HabitTracker.Business;
+using HabitTracker.Repositories;
 
 namespace HabitTracker
 {
@@ -7,7 +8,10 @@ namespace HabitTracker
     {
         static void Main(string[] args)
         {
-            HabitBusiness habit = new HabitBusiness();
+            HabitRepository habitDB = new HabitRepository();
+            habitDB.CreateTable();
+
+            HabitBusiness habit = new HabitBusiness( );
             habit.MainMenu();
         }
     }

@@ -1,15 +1,18 @@
 ﻿using Microsoft.Data.Sqlite;
+using System;
+using System.Collections.Generic;
+using System.Data;
 
 namespace HabitTracker.Repositories
 {
-    public class SQLiteRepository
+    public class HabitRepository
     {
         private readonly string connectionString = @"Data Source=habits.db";
 
         public void CreateTable()
         {
             using (var connection = new SqliteConnection(connectionString))
-            {
+            {                
                 using (var tableCmd = connection.CreateCommand())
                 {
                     tableCmd.CommandText =
@@ -101,7 +104,7 @@ namespace HabitTracker.Repositories
             }
         }
 
-        public void Select(int habitId)
+        public void Get(int habitId)
         {
             using (var connection = new SqliteConnection(connectionString))
             {
@@ -117,6 +120,25 @@ namespace HabitTracker.Repositories
                     tableCmd.ExecuteNonQuery();
                 };
             }
+        }
+        public List<string> GetList()
+        {
+            List<string> habits = new List<string>();
+
+            using (var connection = new SqliteConnection(connectionString))
+            {
+                using (var tableCmd = connection.CreateCommand())
+                {
+                    tableCmd.CommandText = @" SELECT * FROM yourHabit";
+                    tableCmd.CommandType = CommandType.Text;
+                    SqliteDataReader sqlReader = tableCmd.ExecuteReader();
+                    while (sqlReader.Read())
+                    {
+                        habits.Add(Convert.ToString(sqlReader["records"]));
+                    }
+                };
+            }
+            return habits;
         }
     }
 }

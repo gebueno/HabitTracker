@@ -1,9 +1,6 @@
 ﻿using HabitTracker.Repositories;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace HabitTracker.Business
 {
@@ -11,7 +8,6 @@ namespace HabitTracker.Business
     {
         public HabitBusiness()
         {
-            
         }
 
         public void MainMenu()
@@ -30,6 +26,18 @@ namespace HabitTracker.Business
             {
                 case 0:
                     CloseProgram();
+                    break;
+
+                case 1:
+                    GetList();
+                    break;
+
+                case 2:
+                    InsertHabit();
+                    break;
+
+                case 3:
+                    DeleteRecord();
                     break;
             }
         }
@@ -56,10 +64,48 @@ namespace HabitTracker.Business
             }
         }
 
-        private void Select()
+        private List<string> GetList()
         {
+            HabitRepository habitRepository = new HabitRepository();
+            return habitRepository.GetList();
+        }
 
+        private void InsertHabit()
+        {
+            Console.WriteLine("Insert the number of times you want to do this habit");
+            int quantity = Convert.ToInt32(Console.ReadLine());
 
+            Console.WriteLine("Insert a short description of your habit");
+            string description = Console.ReadLine();
+
+            HabitRepository habitRepository = new HabitRepository();
+            habitRepository.Insert(DateTime.Now.ToString(), quantity, description );
+        }
+
+        private void DeleteRecord()
+        {
+            Console.WriteLine("Insert the habit you want to delete");
+            int habitId = Convert.ToInt32(Console.ReadLine());
+
+            HabitRepository habitRepository = new HabitRepository();
+            habitRepository.Get(habitId);
+
+            Console.WriteLine("Are you sure you want to delet the habit? (Y/N)");
+            string deleteConfirmation = Console.ReadLine();
+
+            if(deleteConfirmation == "y" || deleteConfirmation == "Y")
+            {
+                habitRepository.Delete(habitId);
+            }
+            else if(deleteConfirmation == "n" || deleteConfirmation == "N")
+            {
+                MainMenu();
+            }
+            else {
+                Console.WriteLine("Oops, you need to type Y or N, press any key to go to menu");
+                Console.ReadKey();
+                MainMenu();
+            }
         }
     }
 }
