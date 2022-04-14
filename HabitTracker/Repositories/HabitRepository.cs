@@ -1,17 +1,28 @@
-﻿using Microsoft.Data.Sqlite;
+﻿using HabitTracker.Business;
+using Microsoft.Data.Sqlite;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using HabitTracker.Models;
+using System.Globalization;
+using System.Threading.Tasks;
 
 namespace HabitTracker.Repositories
 {
     public class HabitRepository
     {
-        private readonly string connectionString = @"Data Source=habits.db";
+        public static SqliteConnection GetConnection()
+        {
+            string connectionString = @"Data Source=habits.db";
+
+            SqliteConnection connection = new SqliteConnection(connectionString);
+            connection.Open();
+            return connection;
+        }
 
         public void CreateTable()
         {
-            using (var connection = new SqliteConnection(connectionString))
+            using (SqliteConnection connection  = GetConnection())
             {                
                 using (var tableCmd = connection.CreateCommand())
                 {
@@ -30,7 +41,7 @@ namespace HabitTracker.Repositories
 
         public void Insert(string date, int quantity, string description)
         {
-            using (var connection = new SqliteConnection(connectionString))
+            using (SqliteConnection connection = GetConnection())
             {
                 using (var tableCmd = connection.CreateCommand())
                 {
@@ -51,7 +62,7 @@ namespace HabitTracker.Repositories
 
         public void UpdateQuantity(int habitId, int quantity)
         {
-            using (var connection = new SqliteConnection(connectionString))
+            using (SqliteConnection connection = GetConnection())
             {
                 using (var tableCmd = connection.CreateCommand())
                 {
@@ -70,7 +81,7 @@ namespace HabitTracker.Repositories
 
         public void UpdateDescription(int habitId, string description)
         {
-            using (var connection = new SqliteConnection(connectionString))
+            using (SqliteConnection connection = GetConnection())
             {
                 using (var tableCmd = connection.CreateCommand())
                 {
@@ -89,7 +100,7 @@ namespace HabitTracker.Repositories
 
         public void Delete(int habitId)
         {
-            using (var connection = new SqliteConnection(connectionString))
+            using (SqliteConnection connection = GetConnection())
             {
                 using (var tableCmd = connection.CreateCommand())
                 {
@@ -106,7 +117,7 @@ namespace HabitTracker.Repositories
 
         public void Get(int habitId)
         {
-            using (var connection = new SqliteConnection(connectionString))
+            using (SqliteConnection connection = GetConnection())
             {
                 using (var tableCmd = connection.CreateCommand())
                 {
@@ -121,24 +132,32 @@ namespace HabitTracker.Repositories
                 };
             }
         }
-        public List<string> GetList()
-        {
-            List<string> habits = new List<string>();
 
-            using (var connection = new SqliteConnection(connectionString))
+        public List<Habit> GetList()
+        {
+            SqliteConnection connection = GetConnection();
+            var tableCmd = connection.CreateCommand();
+            
+            List<Habit> tableData = new List<Habit>();
+            tableCmd.CommandText = @" SELECT * FROM yourHabit";
+            tableCmd.CommandType = CommandType.Text;
+            SqliteDataReader sqlReader = tableCmd.ExecuteReader();
+
+            if (sqlReader.HasRows)
             {
-                using (var tableCmd = connection.CreateCommand())
+                while (sqlReader.Read())
                 {
-                    tableCmd.CommandText = @" SELECT * FROM yourHabit";
-                    tableCmd.CommandType = CommandType.Text;
-                    SqliteDataReader sqlReader = tableCmd.ExecuteReader();
-                    while (sqlReader.Read())
-                    {
-                        habits.Add(Convert.ToString(sqlReader["records"]));
-                    }
-                };
-            }
-            return habits;
+                    tableData.Add(
+                        new Habit()
+                        {
+                            Id = sqlReader.GetInt32(0),
+                            Date = DateTime.Now.ToString("MM/dd/yyyy"),
+                            Quantity = sqlReader.GetInt32(2),
+                            Description = sqlReader.GetString(3)
+                        });
+                }
+            }            
+            return tableData;
         }
     }
 }

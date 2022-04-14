@@ -1,4 +1,5 @@
-﻿using HabitTracker.Repositories;
+﻿using HabitTracker.Models;
+using HabitTracker.Repositories;
 using System;
 using System.Collections.Generic;
 
@@ -6,10 +7,6 @@ namespace HabitTracker.Business
 {
     class HabitBusiness
     {
-        public HabitBusiness()
-        {
-        }
-
         public void MainMenu()
         {
             Console.WriteLine("Main Menu");
@@ -53,9 +50,8 @@ namespace HabitTracker.Business
             }
             else if(exitInput.Equals("N") || exitInput.Equals("n"))
             {
-                Console.Clear();
-                HabitBusiness habit = new HabitBusiness();
-                habit.MainMenu();
+                Console.Clear();                
+                MainMenu();
             }
             else 
             {
@@ -64,10 +60,37 @@ namespace HabitTracker.Business
             }
         }
 
-        private List<string> GetList()
+        private void GetList()
         {
-            HabitRepository habitRepository = new HabitRepository();
-            return habitRepository.GetList();
+            HabitRepository habitRepository = new();
+            List<Habit> records = habitRepository.GetList();
+
+            foreach(var item in records)
+            {                
+                Console.WriteLine($"Record date: {item.Date} - Decription:  {item.Description} - Quantity: {item.Quantity}");
+            }
+
+            ReturnToMenu();
+        }
+
+        private void ReturnToMenu()
+        {
+            Console.WriteLine("Do you want to return to main menu? (Y/N)");
+            string returnInput = Convert.ToString(Console.ReadLine());
+            if (returnInput.Equals("Y") || returnInput.Equals("y"))
+            {
+                Console.Clear();
+                MainMenu();
+            }
+            else if (returnInput.Equals("N") || returnInput.Equals("n"))
+            {
+                CloseProgram();
+            }
+            else
+            {
+                Console.WriteLine("Oops, you need to type Y or N");
+                ReturnToMenu();
+            }
         }
 
         private void InsertHabit()
@@ -80,6 +103,9 @@ namespace HabitTracker.Business
 
             HabitRepository habitRepository = new HabitRepository();
             habitRepository.Insert(DateTime.Now.ToString(), quantity, description );
+
+            Console.Clear();
+            MainMenu();
         }
 
         private void DeleteRecord()
