@@ -30,11 +30,15 @@ namespace HabitTracker.Business
                     break;
 
                 case 2:
-                    InsertHabit();
+                    Insert();
                     break;
 
                 case 3:
-                    DeleteRecord();
+                    Delete();
+                    break;
+
+                case 4:
+                    Update();
                     break;
             }
         }
@@ -48,12 +52,12 @@ namespace HabitTracker.Business
             {
                 Environment.Exit(0);
             }
-            else if(exitInput.Equals("N") || exitInput.Equals("n"))
+            else if (exitInput.Equals("N") || exitInput.Equals("n"))
             {
-                Console.Clear();                
+                Console.Clear();
                 MainMenu();
             }
-            else 
+            else
             {
                 Console.WriteLine("Oops, you need to type Y or N");
                 CloseProgram();
@@ -62,14 +66,22 @@ namespace HabitTracker.Business
 
         private void GetList()
         {
+            Console.Clear();
             HabitRepository habitRepository = new();
             List<Habit> records = habitRepository.GetList();
 
-            foreach(var item in records)
-            {                
-                Console.WriteLine($"Record date: {item.Date} - Decription:  {item.Description} - Quantity: {item.Quantity}");
+            if(records != null)
+            {
+                foreach (var item in records)
+                {
+                    Console.WriteLine($"Id: {item.Id} - Record date: {item.Date} - Decription:  {item.Description} - Quantity: {item.Quantity}");
+                }
             }
-
+            else
+            {
+                Console.WriteLine("There is no records yet.");
+                ReturnToMenu();
+            }
             ReturnToMenu();
         }
 
@@ -93,7 +105,7 @@ namespace HabitTracker.Business
             }
         }
 
-        private void InsertHabit()
+        private void Insert()
         {
             Console.WriteLine("Insert the number of times you want to do this habit");
             int quantity = Convert.ToInt32(Console.ReadLine());
@@ -102,32 +114,69 @@ namespace HabitTracker.Business
             string description = Console.ReadLine();
 
             HabitRepository habitRepository = new HabitRepository();
-            habitRepository.Insert(DateTime.Now.ToString(), quantity, description );
+            habitRepository.Insert(DateTime.Now.ToString(), quantity, description);
 
             Console.Clear();
             MainMenu();
         }
 
-        private void DeleteRecord()
+        private void Delete()
         {
-            Console.WriteLine("Insert the habit you want to delete");
+            Console.WriteLine("Insert the habit Id you want to delete");
             int habitId = Convert.ToInt32(Console.ReadLine());
 
             HabitRepository habitRepository = new HabitRepository();
             habitRepository.Get(habitId);
 
-            Console.WriteLine("Are you sure you want to delet the habit? (Y/N)");
+            Console.WriteLine("Are you sure you want to delete this habit? (Y/N)");
             string deleteConfirmation = Console.ReadLine();
 
-            if(deleteConfirmation == "y" || deleteConfirmation == "Y")
+            if (deleteConfirmation == "y" || deleteConfirmation == "Y")
             {
                 habitRepository.Delete(habitId);
             }
-            else if(deleteConfirmation == "n" || deleteConfirmation == "N")
+            else if (deleteConfirmation == "n" || deleteConfirmation == "N")
             {
                 MainMenu();
             }
-            else {
+            else
+            {
+                Console.WriteLine("Oops, you need to type Y or N, press any key to go to menu");
+                Console.ReadKey();
+                MainMenu();
+            }
+        }
+
+        private void Update()
+        {
+            Console.WriteLine("Insert the habit Id you want to update: ");
+            int habitId = Convert.ToInt32(Console.ReadLine());
+
+            Console.WriteLine("Insert the number of times you want to do this habit");
+            int quantityUpdated = Convert.ToInt32(Console.ReadLine());
+
+            Console.WriteLine("Insert a short description of your habit");
+            string descriptioUpdated = Console.ReadLine();
+
+            Console.WriteLine("Do you confirm the changes? (Y/N)");
+            Console.WriteLine($"Decription:  {descriptioUpdated} - Quantity: {quantityUpdated}");
+            string updateConfirmation = Console.ReadLine();
+
+            HabitRepository habitRepository = new HabitRepository();
+
+            if (updateConfirmation == "y" || updateConfirmation == "Y")
+            {
+                habitRepository.Update(habitId, quantityUpdated, descriptioUpdated);
+
+                Console.WriteLine("Your habit has been updated!");
+                ReturnToMenu();
+            }
+            else if (updateConfirmation == "n" || updateConfirmation == "N")
+            {
+                MainMenu();
+            }
+            else
+            {
                 Console.WriteLine("Oops, you need to type Y or N, press any key to go to menu");
                 Console.ReadKey();
                 MainMenu();

@@ -60,7 +60,7 @@ namespace HabitTracker.Repositories
             }
         }
 
-        public void UpdateQuantity(int habitId, int quantity)
+        public void Update(int habitId, int quantity, string description)
         {
             using (SqliteConnection connection = GetConnection())
             {
@@ -68,29 +68,12 @@ namespace HabitTracker.Repositories
                 {
                     tableCmd.CommandText =
                         @"UPDATE yourHabit 
-                            SET Quantity = @quantity
+                            SET Quantity = @quantity, 
+                                Description = @description
                             WHERE Id = @id";
 
                     tableCmd.Parameters.AddWithValue("@id", habitId);
                     tableCmd.Parameters.AddWithValue("@quantity", quantity);
-
-                    tableCmd.ExecuteNonQuery();
-                };
-            }
-        }
-
-        public void UpdateDescription(int habitId, string description)
-        {
-            using (SqliteConnection connection = GetConnection())
-            {
-                using (var tableCmd = connection.CreateCommand())
-                {
-                    tableCmd.CommandText =
-                        @"UPDATE yourHabit 
-                            SET Description = @description
-                            WHERE Id = @id";
-
-                    tableCmd.Parameters.AddWithValue("@id", habitId);
                     tableCmd.Parameters.AddWithValue("@description", description);
 
                     tableCmd.ExecuteNonQuery();
@@ -156,7 +139,10 @@ namespace HabitTracker.Repositories
                             Description = sqlReader.GetString(3)
                         });
                 }
-            }            
+            }
+            else {
+                return null;
+            }
             return tableData;
         }
     }
