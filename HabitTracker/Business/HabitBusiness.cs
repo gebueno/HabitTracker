@@ -134,6 +134,8 @@ namespace HabitTracker.Business
             if (deleteConfirmation == "y" || deleteConfirmation == "Y")
             {
                 habitRepository.Delete(habitId);
+                Console.WriteLine($"The record with id: {habitId} has been deleted.");
+                ReturnToMenu();
             }
             else if (deleteConfirmation == "n" || deleteConfirmation == "N")
             {
@@ -152,34 +154,44 @@ namespace HabitTracker.Business
             Console.WriteLine("Insert the habit Id you want to update: ");
             int habitId = Convert.ToInt32(Console.ReadLine());
 
-            Console.WriteLine("Insert the number of times you want to do this habit");
-            int quantityUpdated = Convert.ToInt32(Console.ReadLine());
-
-            Console.WriteLine("Insert a short description of your habit");
-            string descriptioUpdated = Console.ReadLine();
-
-            Console.WriteLine("Do you confirm the changes? (Y/N)");
-            Console.WriteLine($"Decription:  {descriptioUpdated} - Quantity: {quantityUpdated}");
-            string updateConfirmation = Console.ReadLine();
-
             HabitRepository habitRepository = new HabitRepository();
+            var response = habitRepository.Get(habitId);
 
-            if (updateConfirmation == "y" || updateConfirmation == "Y")
+            if (response != null)
             {
-                habitRepository.Update(habitId, quantityUpdated, descriptioUpdated);
+                Console.WriteLine("Insert the number of times you want to do this habit");
+                int quantityUpdated = Convert.ToInt32(Console.ReadLine());
 
-                Console.WriteLine("Your habit has been updated!");
-                ReturnToMenu();
-            }
-            else if (updateConfirmation == "n" || updateConfirmation == "N")
-            {
-                MainMenu();
+                Console.WriteLine("Insert a short description of your habit");
+                string descriptioUpdated = Console.ReadLine();
+
+                Console.WriteLine("Do you confirm the changes? (Y/N)");
+                Console.WriteLine($"Decription:  {descriptioUpdated} - Quantity: {quantityUpdated}");
+                string updateConfirmation = Console.ReadLine();
+
+
+                if (updateConfirmation == "y" || updateConfirmation == "Y")
+                {
+                    habitRepository.Update(habitId, quantityUpdated, descriptioUpdated);
+
+                    Console.WriteLine("Your habit has been updated!");
+                    ReturnToMenu();
+                }
+                else if (updateConfirmation == "n" || updateConfirmation == "N")
+                {
+                    MainMenu();
+                }
+                else
+                {
+                    Console.WriteLine("Oops, you need to type Y or N, press any key to go to menu");
+                    Console.ReadKey();
+                    MainMenu();
+                }
             }
             else
             {
-                Console.WriteLine("Oops, you need to type Y or N, press any key to go to menu");
-                Console.ReadKey();
-                MainMenu();
+                Console.WriteLine("There is no record with this Id. Input a existent record Id.");
+                Update();
             }
         }
     }

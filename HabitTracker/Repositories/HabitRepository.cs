@@ -98,8 +98,9 @@ namespace HabitTracker.Repositories
             }
         }
 
-        public void Get(int habitId)
+        public Habit Get(int habitId)
         {
+            Habit habit = new Habit();
             using (SqliteConnection connection = GetConnection())
             {
                 using (var tableCmd = connection.CreateCommand())
@@ -108,12 +109,25 @@ namespace HabitTracker.Repositories
                         @"SELECT Date, Quantity, Description
                             FROM yourHabit
                             WHERE Id = @id";
-
                     tableCmd.Parameters.AddWithValue("@id", habitId);
-
-                    tableCmd.ExecuteNonQuery();
+                    tableCmd.CommandType = CommandType.Text;
+                    SqliteDataReader sqlReader = tableCmd.ExecuteReader();
+                    if (!sqlReader.HasRows)
+                    {
+                        return null;
+                    }
+                    else
+                    {
+                        while (sqlReader.Read())
+                        {
+                            habit.Date = sqlReader.GetString(0);
+                            habit.Quantity = sqlReader.GetInt32(1);
+                            habit.Description = sqlReader.GetString(2);
+                        };
+                    }
                 };
             }
+            return habit;
         }
 
         public List<Habit> GetList()
